@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { G, DIM, DARK, CREAM, type Profile, type Scores, type CheckIn } from '@/components/hos/constants';
-import { getOverall, storage } from '@/components/hos/helpers';
+import { getOverall, saveAssessment, storage } from '@/components/hos/helpers';
 import Onboard from '@/components/hos/Onboard';
 import Assess from '@/components/hos/Assess';
 import DashTab from '@/components/hos/DashTab';
@@ -43,8 +43,10 @@ export default function Index() {
   const onProfile = (p: Profile) => { setProfile(p); save('hos:profile', p); setState('assessment'); };
   const onScores = (s: Scores) => {
     setScores(s); save('hos:scores', s);
-    const ci: CheckIn = { date: new Date().toISOString(), mood: getOverall(s), note: 'Baseline assessment.' };
-    const c = [ci]; setCheckIns(c); save('hos:checkins', c);
+    // Save assessment to history
+    saveAssessment(s);
+    const ci: CheckIn = { date: new Date().toISOString(), mood: getOverall(s), energy: getOverall(s), note: 'Baseline assessment.' };
+    const c = [...checkIns, ci]; setCheckIns(c); save('hos:checkins', c);
     setState('main');
   };
   const onCheckIn = (ci: CheckIn) => { const c = [...checkIns, ci]; setCheckIns(c); save('hos:checkins', c); };
