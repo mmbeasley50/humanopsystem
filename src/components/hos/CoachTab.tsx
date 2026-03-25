@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { G, DIM, CREAM, CARD, GREEN, ALL_FACTORS, type Profile, type Scores } from './constants';
+import { G, DIM, CREAM, ALL_FACTORS, type Profile, type Scores } from './constants';
 import { getOverall, scoreColor } from './helpers';
 import { storage } from './helpers';
 import { Card, Mono, btnStyle, ghost } from './shared';
@@ -15,6 +15,7 @@ interface Coaching {
   weeklyFocus: string;
   actions?: { title: string; description: string }[];
   truthTell?: string;
+  todayMission?: string;
 }
 
 export default function CoachTab({ profile, scores }: CoachTabProps) {
@@ -38,8 +39,6 @@ export default function CoachTab({ profile, scores }: CoachTabProps) {
     setLoading(true);
     setErr(null);
     try {
-      // TODO: Wire up with Lovable AI edge function
-      // For now, generate a local analysis based on scores
       const factorScores = ALL_FACTORS.map(f => ({ ...f, score: scores[f.id] ?? 5 }));
       const sorted = [...factorScores].sort((a, b) => a.score - b.score);
       const worst = sorted[0];
@@ -60,6 +59,7 @@ export default function CoachTab({ profile, scores }: CoachTabProps) {
         truthTell: overall < 6
           ? "You're not where you want to be, and the gap between your current reality and your mission is real. But awareness is the first step."
           : "You're doing better than you think, but comfort is the enemy of growth. Don't let good enough become your ceiling.",
+        todayMission: `${profile.name}, your one job today: move ${worst.name} from ${worst.score} toward ${Math.min(worst.score + 1, 10)}. One action. No excuses.`,
       };
 
       setCoaching(parsed);
@@ -109,12 +109,21 @@ export default function CoachTab({ profile, scores }: CoachTabProps) {
         <div>
           {updated && <Mono style={{ marginBottom: 16, fontSize: 9 }}>Last updated: {new Date(updated).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</Mono>}
 
+          {coaching.todayMission && (
+            <div style={{ background: 'rgba(82,183,136,0.08)', border: `1px solid rgba(82,183,136,0.25)`, borderRadius: 12, padding: '16px 20px', marginBottom: 14 }}>
+              <Mono style={{ color: '#52B788', marginBottom: 8 }}>Today's Mission</Mono>
+              <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 17, color: CREAM, lineHeight: 1.55, fontStyle: 'italic' }}>
+                "{coaching.todayMission}"
+              </p>
+            </div>
+          )}
+
           <Card style={{ marginBottom: 14 }}>
             <Mono style={{ marginBottom: 10 }}>Where You Are</Mono>
             <p style={{ fontSize: 15, color: '#D4CBBA', lineHeight: 1.75 }}>{coaching.overallRead}</p>
           </Card>
 
-          <div style={{ background: CARD, border: `1px solid rgba(201,168,76,0.28)`, borderLeft: `3px solid ${G}`, borderRadius: '0 12px 12px 0', padding: '18px 20px', marginBottom: 14 }}>
+          <div style={{ background: '#111110', border: `1px solid rgba(201,168,76,0.28)`, borderLeft: `3px solid ${G}`, borderRadius: '0 12px 12px 0', padding: '18px 20px', marginBottom: 14 }}>
             <Mono style={{ color: G, marginBottom: 8 }}>Your Bottleneck</Mono>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>
               <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, color: CREAM }}>{coaching.bottleneck?.factor}</div>
@@ -126,7 +135,7 @@ export default function CoachTab({ profile, scores }: CoachTabProps) {
           </div>
 
           <div style={{ background: 'rgba(82,183,136,0.07)', border: '1px solid rgba(82,183,136,0.2)', borderRadius: 12, padding: '18px 20px', marginBottom: 14 }}>
-            <Mono style={{ color: GREEN, marginBottom: 8 }}>This Week's Focus</Mono>
+            <Mono style={{ color: '#52B788', marginBottom: 8 }}>This Week's Focus</Mono>
             <p style={{ fontSize: 15, color: '#D4CBBA', lineHeight: 1.65 }}>{coaching.weeklyFocus}</p>
           </div>
 

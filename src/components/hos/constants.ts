@@ -87,10 +87,56 @@ export interface Profile {
   mission: string;
 }
 
+// Upgraded check-in with accountability fields
 export interface CheckIn {
   date: string;
   mood: number;
+  energy: number;
+  tasksCompleted?: boolean[];
+  win?: string;
+  miss?: string;
   note: string;
 }
 
+// Assessment snapshot for history
+export interface Assessment {
+  date: string;
+  scores: Scores;
+  domainScores: Record<string, number>;
+  overall: number;
+}
+
+// Today Plan generated from scores
+export interface TodayPlan {
+  date: string;
+  primaryFocus: { factor: string; insight: string };
+  actions: { title: string; description: string; completed: boolean }[];
+  avoid: string;
+  accountability: string;
+}
+
 export type Scores = Record<number, number>;
+
+// Factor → action mapping for deterministic Today Plan generation
+export const FACTOR_ACTIONS: Record<number, { action: string; avoid: string }> = {
+  1: { action: '30 min physical exercise or structured movement', avoid: 'Skipping meals or sleeping less than 7 hours' },
+  2: { action: '10 min journaling or meditation for mental clarity', avoid: 'Doom-scrolling or numbing with screens' },
+  3: { action: 'Write down 3 specific things you are grateful for', avoid: 'Complaining or comparing yourself to others' },
+  4: { action: 'Do one thing that makes you uncomfortable today', avoid: 'Avoiding hard conversations or decisions' },
+  5: { action: 'Spend 20 min working on your mission-aligned project', avoid: 'Filling time with tasks that feel busy but lack meaning' },
+  6: { action: 'Write one true sentence about who you are becoming', avoid: 'Seeking external validation as identity proof' },
+  7: { action: 'Keep one promise you made — especially a small one', avoid: 'Cutting corners or rationalizing dishonesty' },
+  8: { action: '10 min of prayer, reflection, or contemplative practice', avoid: 'Ignoring your inner life entirely' },
+  9: { action: 'Have one real conversation with someone you care about', avoid: 'Surface-level socializing as a substitute for depth' },
+  10: { action: 'Do one act of service for your community', avoid: 'Isolating or only consuming without contributing' },
+  11: { action: 'Make one decision today that is fully yours', avoid: 'Deferring all choices to others or autopilot' },
+  12: { action: 'Practice your most important skill for 30 min', avoid: 'Staying in your comfort zone of existing competence' },
+  13: { action: 'Complete one concrete task toward your biggest goal', avoid: 'Planning without executing' },
+  14: { action: 'Block 60 min for deep, uninterrupted work', avoid: 'Multitasking or constant context-switching' },
+  15: { action: 'Review your spending and savings for the week', avoid: 'Impulse purchases or financial avoidance' },
+  16: { action: 'Take one step toward increasing your income or skills', avoid: 'Telling yourself "someday" without action' },
+  17: { action: 'Read or study for 30 min in your growth area', avoid: 'Passive content consumption disguised as learning' },
+  18: { action: 'Clean or organize one area of your space', avoid: 'Tolerating clutter or chaos in your environment' },
+  19: { action: 'Say no to one thing that doesn\'t align with your values', avoid: 'People-pleasing at the expense of authenticity' },
+  20: { action: 'Audit your calendar — does today reflect your priorities?', avoid: 'Letting urgency crowd out importance' },
+};
