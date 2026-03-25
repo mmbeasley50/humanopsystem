@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { G, DIM, CREAM, type Profile } from './constants';
 import { Mono, inp, btnStyle, ghost } from './shared';
 
@@ -6,13 +6,38 @@ interface OnboardProps {
   onComplete: (profile: Profile) => void;
 }
 
+/** Returns window.innerHeight and updates on resize/orientation change — works on all mobile browsers */
+function useViewportHeight() {
+  const [h, setH] = useState(() => typeof window !== 'undefined' ? window.innerHeight : 800);
+  useEffect(() => {
+    const update = () => setH(window.innerHeight);
+    window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', update);
+    };
+  }, []);
+  return h;
+}
+
 export default function Onboard({ onComplete }: OnboardProps) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [mission, setMission] = useState('');
+  const vh = useViewportHeight();
+
+  const shell = (paddingTop: number): React.CSSProperties => ({
+    height: vh,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: `${paddingTop}px 28px 56px`,
+    overflow: 'hidden',
+  });
 
   if (step === 0) return (
-    <div style={{ height: '100dvh', minHeight: '-webkit-fill-available', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '80px 28px 56px' }}>
+    <div style={shell(80)}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 72, color: G, fontStyle: 'italic', lineHeight: 1, marginBottom: 16 }}>HOS</div>
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: DIM, letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 48 }}>Human Operating System</div>
@@ -28,7 +53,7 @@ export default function Onboard({ onComplete }: OnboardProps) {
   );
 
   if (step === 1) return (
-    <div style={{ height: '100dvh', minHeight: '-webkit-fill-available', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 28px 56px' }}>
+    <div style={shell(60)}>
       <div>
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, color: G, fontStyle: 'italic', marginBottom: 40 }}>HOS</div>
         <Mono style={{ marginBottom: 12 }}>01 — Your Name</Mono>
@@ -46,7 +71,7 @@ export default function Onboard({ onComplete }: OnboardProps) {
 
   const ok = mission.trim().length > 15;
   return (
-    <div style={{ height: '100dvh', minHeight: '-webkit-fill-available', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 28px 56px' }}>
+    <div style={shell(60)}>
       <div>
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, color: G, fontStyle: 'italic', marginBottom: 40 }}>HOS</div>
         <Mono style={{ marginBottom: 12 }}>02 — Your Mission</Mono>
