@@ -12,7 +12,7 @@ export default function Onboard({ onComplete }: OnboardProps) {
   const [mission, setMission] = useState('');
 
   if (step === 0) return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '80px 28px 56px' }}>
+    <div style={{ height: '100dvh', minHeight: '-webkit-fill-available', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '80px 28px 56px' }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 72, color: G, fontStyle: 'italic', lineHeight: 1, marginBottom: 16 }}>HOS</div>
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: DIM, letterSpacing: '0.4em', textTransform: 'uppercase', marginBottom: 48 }}>Human Operating System</div>
@@ -28,7 +28,7 @@ export default function Onboard({ onComplete }: OnboardProps) {
   );
 
   if (step === 1) return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 28px 56px' }}>
+    <div style={{ height: '100dvh', minHeight: '-webkit-fill-available', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 28px 56px' }}>
       <div>
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, color: G, fontStyle: 'italic', marginBottom: 40 }}>HOS</div>
         <Mono style={{ marginBottom: 12 }}>01 — Your Name</Mono>
@@ -46,7 +46,7 @@ export default function Onboard({ onComplete }: OnboardProps) {
 
   const ok = mission.trim().length > 15;
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 28px 56px' }}>
+    <div style={{ height: '100dvh', minHeight: '-webkit-fill-available', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 28px 56px' }}>
       <div>
         <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, color: G, fontStyle: 'italic', marginBottom: 40 }}>HOS</div>
         <Mono style={{ marginBottom: 12 }}>02 — Your Mission</Mono>
