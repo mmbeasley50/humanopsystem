@@ -1,4 +1,4 @@
-import { DOMAINS, ALL_FACTORS, GREEN, G, RED, type Scores, type CheckIn } from './constants';
+import { DOMAINS, ALL_FACTORS, GREEN, G, RED, FACTOR_ACTIONS, type Scores, type CheckIn, type TodayPlan, type Assessment } from './constants';
 
 export const getDomainScore = (id: string, scores: Scores): number => {
   const d = DOMAINS.find(x => x.id === id);
@@ -13,6 +13,12 @@ export const getOverall = (scores: Scores): number => {
   return +(v.reduce((a, b) => a + b, 0) / v.length).toFixed(1);
 };
 
+export const getDomainScoresMap = (scores: Scores): Record<string, number> => {
+  const map: Record<string, number> = {};
+  DOMAINS.forEach(d => { map[d.id] = getDomainScore(d.id, scores); });
+  return map;
+};
+
 export const label = (s: number): string =>
   s >= 8.5 ? 'Thriving' : s >= 7 ? 'Strong' : s >= 5 ? 'Developing' : s >= 3 ? 'Struggling' : 'Critical';
 
@@ -25,22 +31,62 @@ export const bottomFactors = (scores: Scores, n = 3) =>
 export const checkedToday = (cis: CheckIn[]): boolean =>
   cis.some(ci => new Date(ci.date).toDateString() === new Date().toDateString());
 
+// Fixed streak logic using proper timestamp comparison
 export const streak = (cis: CheckIn[]): number => {
   if (!cis.length) return 0;
-  const dates = [...new Set(cis.map(ci => new Date(ci.date).toDateString()))].sort().reverse();
-  let s = 0;
-  const cur = new Date();
-  cur.setHours(0, 0, 0, 0);
-  let currentDate = cur;
-  for (const ds of dates) {
-    const d = new Date(ds);
+  const uniqueDates = [...new Set(cis.map(ci => {
+    const d = new Date(ci.date);
     d.setHours(0, 0, 0, 0);
-    if (Math.round((currentDate.getTime() - d.getTime()) / 86400000) <= 1) {
-      s++;
-      currentDate = d;
-    } else break;
+    return d.getTime();
+  }))].sort((a, b) => b - a); // sort descending by timestamp
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayMs = today.getTime();
+  const DAY = 86400000;
+
+  // Check if most recent check-in is today or yesterday
+  if (uniqueDates[0] < todayMs - DAY) return 0;
+
+  let count = 0;
+  let expected = uniqueDates[0] === todayMs ? todayMs : todayMs - DAY;
+
+  for (const dateMs of uniqueDates) {
+    if (dateMs === expected) {
+      count++;
+      expected -= DAY;
+    } else if (dateMs < expected) {
+      break;
+    }
   }
-  return s;
+  return count;
+};
+
+// Generate deterministic Today Plan from lowest factors
+export const generateTodayPlan = (scores: Scores): TodayPlan => {
+  const bottom = bottomFactors(scores, 3);
+  const primary = bottom[0];
+  const primaryAction = FACTOR_ACTIONS[primary.id];
+
+  const actions = bottom.map(f => {
+    const mapping = FACTOR_ACTIONS[f.id];
+    return {
+      title: f.name,
+      description: mapping?.action ?? `Improve your ${f.name.toLowerCase()} with focused effort today.`,
+      completed: false,
+    };
+  });
+
+  return {
+    date: new Date().toISOString(),
+    primaryFocus: {
+      factor: primary.name,
+      insight: `At ${primary.score}/10, ${primary.name} is your biggest constraint. Improving this will unlock progress across your other domains.`,
+    },
+    actions,
+    avoid: primaryAction?.avoid ?? 'Avoid behaviors that undermine your weakest area.',
+    accountability: `Today I will focus on ${primary.name} because it is my #1 constraint at ${primary.score}/10.`,
+  };
 };
 
 export const storage = {
@@ -50,4 +96,25 @@ export const storage = {
   set: (key: string, value: string) => {
     try { localStorage.setItem(key, value); } catch { /* noop */ }
   },
+};
+
+// Assessment history helpers
+export const getAssessments = (): Assessment[] => {
+  try {
+    const raw = storage.get('hos:assessments');
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+};
+
+export const saveAssessment = (scores: Scores): Assessment => {
+  const assessment: Assessment = {
+    date: new Date().toISOString(),
+    scores,
+    domainScores: getDomainScoresMap(scores),
+    overall: getOverall(scores),
+  };
+  const existing = getAssessments();
+  existing.push(assessment);
+  storage.set('hos:assessments', JSON.stringify(existing));
+  return assessment;
 };
