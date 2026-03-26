@@ -131,12 +131,12 @@ export function useHosData(): HosData {
     // Save assessment snapshot
     const domainScores = getDomainScoresMap(s);
     const overall = getOverall(s);
-    await supabase.from('assessments').insert({
+    await supabase.from('assessments').insert([{
       user_id: user.id,
       scores: s as unknown as Record<string, unknown>,
       domain_scores: domainScores as unknown as Record<string, unknown>,
       overall,
-    });
+    }]);
 
     setScores(s);
     setAssessmentCompleted(true);
