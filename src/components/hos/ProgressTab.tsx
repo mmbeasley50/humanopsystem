@@ -7,12 +7,14 @@ import { Card, Mono } from './shared';
 interface ProgressTabProps {
   scores: Scores;
   checkIns: CheckIn[];
+  assessments?: Assessment[];
+  streak?: { current: number; longest: number };
 }
 
-export default function ProgressTab({ scores, checkIns }: ProgressTabProps) {
+export default function ProgressTab({ scores, checkIns, assessments: propAssessments, streak: streakData }: ProgressTabProps) {
   const [viewHistory, setViewHistory] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
-  const assessments = getAssessments();
+  const assessments = propAssessments ?? getAssessments();
 
   const overall = getOverall(scores);
   const chartData = checkIns.slice(-21).map(ci => ({
@@ -21,7 +23,7 @@ export default function ProgressTab({ scores, checkIns }: ProgressTabProps) {
     energy: ci.energy ?? ci.mood,
   }));
   const days = new Set(checkIns.map(ci => new Date(ci.date).toDateString())).size;
-  const str = streak(checkIns);
+  const str = streakData?.current ?? streak(checkIns);
 
   const CTip = ({ active, payload, label: l }: any) => {
     if (!active || !payload?.length) return null;

@@ -7,11 +7,13 @@ interface DashTabProps {
   profile: Profile;
   scores: Scores;
   checkIns: CheckIn[];
+  goals?: { id: string; title: string; category: string; active: boolean }[];
+  streak?: { current: number; longest: number };
 }
 
-export default function DashTab({ profile, scores, checkIns }: DashTabProps) {
+export default function DashTab({ profile, scores, checkIns, goals = [], streak: streakData }: DashTabProps) {
   const overall = getOverall(scores);
-  const str = streak(checkIns);
+  const str = streakData?.current ?? streak(checkIns);
   const done = checkedToday(checkIns);
   const worst = ALL_FACTORS.map(f => ({ ...f, score: scores[f.id] ?? 5 })).sort((a, b) => a.score - b.score)[0];
   const radarData = DOMAINS.map(d => ({ domain: d.name, score: getDomainScore(d.id, scores) }));
@@ -86,6 +88,19 @@ export default function DashTab({ profile, scores, checkIns }: DashTabProps) {
           );
         })}
       </Card>
+
+      {goals.length > 0 && (
+        <Card style={{ marginBottom: 16 }}>
+          <Mono style={{ marginBottom: 14 }}>Active Goals</Mono>
+          {goals.filter(g => g.active).slice(0, 3).map(g => (
+            <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: G }} />
+              <div style={{ fontSize: 13, color: '#D4CBBA' }}>{g.title}</div>
+              <div style={{ fontSize: 10, color: DIM, marginLeft: 'auto' }}>{g.category}</div>
+            </div>
+          ))}
+        </Card>
+      )}
 
       {!done && (
         <div style={{ background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.16)', borderRadius: 12, padding: '16px 20px', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

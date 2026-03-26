@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { G, DIM, CREAM, RED, type Profile, type Scores } from './constants';
 import { Card, Mono, inp, btnStyle, ghost } from './shared';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProfileTabProps {
   profile: Profile;
   scores: Scores;
   onUpdate: (p: Profile) => void;
   onReassess: () => void;
+  onSignOut?: () => Promise<void>;
 }
 
-export default function ProfileTab({ profile, onUpdate, onReassess }: ProfileTabProps) {
+export default function ProfileTab({ profile, onUpdate, onReassess, onSignOut }: ProfileTabProps) {
+  const { signOut } = useAuth();
   const [editing, setEditing] = useState(false);
   const [n, setN] = useState(profile?.name || '');
   const [m, setM] = useState(profile?.mission || '');
@@ -83,6 +86,10 @@ export default function ProfileTab({ profile, onUpdate, onReassess }: ProfileTab
           </div>
         )}
       </Card>
+
+      <button onClick={signOut} style={{ ...ghost, marginBottom: 32, color: '#E57373', borderColor: 'rgba(192,57,43,0.2)' }}>
+        Sign Out
+      </button>
     </div>
   );
 }
