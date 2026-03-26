@@ -133,8 +133,8 @@ export function useHosData(): HosData {
     const overall = getOverall(s);
     await supabase.from('assessments').insert([{
       user_id: user.id,
-      scores: s as unknown as Record<string, unknown>,
-      domain_scores: domainScores as unknown as Record<string, unknown>,
+      scores: JSON.parse(JSON.stringify(s)),
+      domain_scores: JSON.parse(JSON.stringify(domainScores)),
       overall,
     }]);
 
