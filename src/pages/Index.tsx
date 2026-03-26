@@ -121,9 +121,6 @@ export default function Index() {
             scores={hosData.scores}
             onUpdate={hosData.updateProfile}
             onReassess={onReassess}
-            onSignOut={async () => {
-              const { useAuth } = await import('@/contexts/AuthContext');
-            }}
           />
         )}
       </div>

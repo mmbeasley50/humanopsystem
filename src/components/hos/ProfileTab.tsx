@@ -86,6 +86,10 @@ export default function ProfileTab({ profile, onUpdate, onReassess, onSignOut }:
           </div>
         )}
       </Card>
+
+      <button onClick={signOut} style={{ ...ghost, marginBottom: 32, color: '#E57373', borderColor: 'rgba(192,57,43,0.2)' }}>
+        Sign Out
+      </button>
     </div>
   );
 }
