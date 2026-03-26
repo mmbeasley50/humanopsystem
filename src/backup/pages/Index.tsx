@@ -68,7 +68,7 @@ export default function Index() {
     <div style={wrap}>
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', paddingBottom: 76 }}>
         {tab === 'home' && <DashTab profile={profile!} scores={scores} checkIns={checkIns} />}
-        {tab === 'coach' && <CoachTab profile={profile!} scores={scores} />}
+        {tab === 'coach' && <CoachTab profile={profile!} scores={scores} coachingMessages={[]} onRefresh={async () => {}} />}
         {tab === 'today' && <TodayTab scores={scores} checkIns={checkIns} onAdd={onCheckIn} />}
         {tab === 'progress' && <ProgressTab scores={scores} checkIns={checkIns} />}
         {tab === 'profile' && <ProfileTab profile={profile!} scores={scores} onUpdate={onProfileUpdate} onReassess={onReassess} />}
