@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { DARK, type Profile, type Scores, type CheckIn } from '@/components/hos/constants';
+import { useState } from 'react';
+import { DARK, type CheckIn } from '@/components/hos/constants';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHosData } from '@/hooks/useHosData';
 import AuthScreen from '@/components/hos/AuthScreen';
