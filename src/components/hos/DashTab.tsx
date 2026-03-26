@@ -7,11 +7,13 @@ interface DashTabProps {
   profile: Profile;
   scores: Scores;
   checkIns: CheckIn[];
+  goals?: { id: string; title: string; category: string; active: boolean }[];
+  streak?: { current: number; longest: number };
 }
 
-export default function DashTab({ profile, scores, checkIns }: DashTabProps) {
+export default function DashTab({ profile, scores, checkIns, goals = [], streak: streakData }: DashTabProps) {
   const overall = getOverall(scores);
-  const str = streak(checkIns);
+  const str = streakData?.current ?? streak(checkIns);
   const done = checkedToday(checkIns);
   const worst = ALL_FACTORS.map(f => ({ ...f, score: scores[f.id] ?? 5 })).sort((a, b) => a.score - b.score)[0];
   const radarData = DOMAINS.map(d => ({ domain: d.name, score: getDomainScore(d.id, scores) }));
