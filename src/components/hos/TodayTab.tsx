@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DIM, CREAM, GREEN, G, type Scores, type CheckIn, type TodayPlan } from './constants';
 import { scoreColor, label, checkedToday, bottomFactors, generateTodayPlan, storage } from './helpers';
-import { Card, Mono, inp, btnStyle } from './shared';
+import { Card, Mono, inp, btnStyle, ghost } from './shared';
 
 interface TodayTabProps {
   scores: Scores;
