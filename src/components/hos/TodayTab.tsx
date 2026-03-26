@@ -7,9 +7,12 @@ interface TodayTabProps {
   scores: Scores;
   checkIns: CheckIn[];
   onAdd: (ci: CheckIn) => void;
+  goals?: { id: string; title: string; category: string; active: boolean }[];
+  onSaveGoal?: (title: string, category: string) => Promise<void>;
+  onDeleteGoal?: (id: string) => Promise<void>;
 }
 
-export default function TodayTab({ scores, checkIns, onAdd }: TodayTabProps) {
+export default function TodayTab({ scores, checkIns, onAdd, goals = [], onSaveGoal, onDeleteGoal }: TodayTabProps) {
   const [mood, setMood] = useState(7);
   const [energy, setEnergy] = useState(7);
   const [win, setWin] = useState('');
