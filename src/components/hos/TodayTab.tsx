@@ -21,6 +21,8 @@ export default function TodayTab({ scores, checkIns, onAdd, goals = [], onSaveGo
   const [done, setDone] = useState(false);
   const [plan, setPlan] = useState<TodayPlan | null>(null);
   const [taskChecks, setTaskChecks] = useState<boolean[]>([false, false, false]);
+  const [newGoal, setNewGoal] = useState('');
+  const [showGoalForm, setShowGoalForm] = useState(false);
   const alreadyDone = checkedToday(checkIns);
   const todayCI = checkIns.find(ci => new Date(ci.date).toDateString() === new Date().toDateString());
 
@@ -230,7 +232,51 @@ export default function TodayTab({ scores, checkIns, onAdd, goals = [], onSaveGo
         />
       </Card>
 
-      <button onClick={submit} style={{ ...btnStyle(true), marginBottom: 24 }}>Record Check-in →</button>
+      <button onClick={submit} style={{ ...btnStyle(true), marginBottom: 16 }}>Record Check-in →</button>
+
+      {/* Goals Section */}
+      {onSaveGoal && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '8px 0 24px' }} />
+          <Mono style={{ marginBottom: 14 }}>Your Goals</Mono>
+          {goals.filter(g => g.active).map(g => (
+            <Card key={g.id} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: 14, color: CREAM }}>{g.title}</div>
+                <div style={{ fontSize: 11, color: DIM }}>{g.category}</div>
+              </div>
+              {onDeleteGoal && (
+                <button onClick={() => onDeleteGoal(g.id)} style={{ background: 'none', border: 'none', color: DIM, cursor: 'pointer', fontSize: 16 }}>×</button>
+              )}
+            </Card>
+          ))}
+          {showGoalForm ? (
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <input
+                type="text" value={newGoal} onChange={e => setNewGoal(e.target.value)}
+                placeholder="New goal..." style={{ ...inp, flex: 1, padding: '10px 12px', fontSize: 13 }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && newGoal.trim()) {
+                    onSaveGoal(newGoal.trim(), 'general');
+                    setNewGoal('');
+                    setShowGoalForm(false);
+                  }
+                }}
+                autoFocus
+              />
+              <button onClick={() => {
+                if (newGoal.trim()) {
+                  onSaveGoal(newGoal.trim(), 'general');
+                  setNewGoal('');
+                  setShowGoalForm(false);
+                }
+              }} style={{ ...btnStyle(!!newGoal.trim()), width: 60, padding: '10px', fontSize: 13 }}>Add</button>
+            </div>
+          ) : (
+            <button onClick={() => setShowGoalForm(true)} style={{ ...ghost, marginTop: 8, fontSize: 13 }}>+ Add Goal</button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
