@@ -14,7 +14,215 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assessments: {
+        Row: {
+          created_at: string
+          domain_scores: Json
+          id: string
+          overall: number
+          scores: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          domain_scores?: Json
+          id?: string
+          overall?: number
+          scores?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          domain_scores?: Json
+          id?: string
+          overall?: number
+          scores?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      coaching_messages: {
+        Row: {
+          checkin_id: string | null
+          created_at: string
+          id: string
+          message: string
+          user_id: string
+        }
+        Insert: {
+          checkin_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          user_id: string
+        }
+        Update: {
+          checkin_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaching_messages_checkin_id_fkey"
+            columns: ["checkin_id"]
+            isOneToOne: false
+            referencedRelation: "daily_checkins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_checkins: {
+        Row: {
+          completed_tasks: Json | null
+          created_at: string
+          date: string
+          energy: number
+          id: string
+          miss: string | null
+          mood: number
+          planned_tasks: Json | null
+          reflection: string | null
+          user_id: string
+          win: string | null
+        }
+        Insert: {
+          completed_tasks?: Json | null
+          created_at?: string
+          date?: string
+          energy?: number
+          id?: string
+          miss?: string | null
+          mood?: number
+          planned_tasks?: Json | null
+          reflection?: string | null
+          user_id: string
+          win?: string | null
+        }
+        Update: {
+          completed_tasks?: Json | null
+          created_at?: string
+          date?: string
+          energy?: number
+          id?: string
+          miss?: string | null
+          mood?: number
+          planned_tasks?: Json | null
+          reflection?: string | null
+          user_id?: string
+          win?: string | null
+        }
+        Relationships: []
+      }
+      goals: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          mission: string
+          name: string
+          onboarding_completed: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mission?: string
+          name?: string
+          onboarding_completed?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mission?: string
+          name?: string
+          onboarding_completed?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      scores: {
+        Row: {
+          factor_id: number
+          id: string
+          score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          factor_id: number
+          id?: string
+          score?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          factor_id?: number
+          id?: string
+          score?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      streaks: {
+        Row: {
+          current_streak: number
+          last_checkin_date: string | null
+          longest_streak: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_streak?: number
+          last_checkin_date?: string | null
+          longest_streak?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_streak?: number
+          last_checkin_date?: string | null
+          longest_streak?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
