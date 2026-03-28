@@ -1,72 +1,58 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DIM, CREAM, GREEN, G, type Scores, type CheckIn, type TodayPlan } from './constants';
-import { scoreColor, label, checkedToday, bottomFactors, generateTodayPlan, storage } from './helpers';
+import { scoreColor, label, checkedToday } from './helpers';
 import { Card, Mono, inp, btnStyle, ghost } from './shared';
 
 interface TodayTabProps {
   scores: Scores;
   checkIns: CheckIn[];
-  onAdd: (ci: CheckIn) => void;
+  onAdd: (ci: Omit<CheckIn, 'date'>) => void;
   goals?: { id: string; title: string; category: string; active: boolean }[];
   onSaveGoal?: (title: string, category: string) => Promise<void>;
   onDeleteGoal?: (id: string) => Promise<void>;
+  todayPlan?: TodayPlan | null;
+  onUpdatePlanTask?: (index: number, completed: boolean) => Promise<void>;
 }
 
-export default function TodayTab({ scores, checkIns, onAdd, goals = [], onSaveGoal, onDeleteGoal }: TodayTabProps) {
+export default function TodayTab({ scores, checkIns, onAdd, goals = [], onSaveGoal, onDeleteGoal, todayPlan: plan, onUpdatePlanTask }: TodayTabProps) {
   const [mood, setMood] = useState(7);
   const [energy, setEnergy] = useState(7);
   const [win, setWin] = useState('');
   const [miss, setMiss] = useState('');
   const [note, setNote] = useState('');
   const [done, setDone] = useState(false);
-  const [plan, setPlan] = useState<TodayPlan | null>(null);
-  const [taskChecks, setTaskChecks] = useState<boolean[]>([false, false, false]);
+  const [submitting, setSubmitting] = useState(false);
+  const [coachingResult, setCoachingResult] = useState<string | null>(null);
   const [newGoal, setNewGoal] = useState('');
   const [showGoalForm, setShowGoalForm] = useState(false);
   const alreadyDone = checkedToday(checkIns);
   const todayCI = checkIns.find(ci => new Date(ci.date).toDateString() === new Date().toDateString());
 
-  // Load or generate today plan
-  useEffect(() => {
-    const raw = storage.get('hos:todayplan');
-    if (raw) {
-      try {
-        const saved = JSON.parse(raw) as TodayPlan;
-        if (new Date(saved.date).toDateString() === new Date().toDateString()) {
-          setPlan(saved);
-          setTaskChecks(saved.actions.map(a => a.completed));
-          return;
-        }
-      } catch { /* regenerate */ }
-    }
-    const newPlan = generateTodayPlan(scores);
-    setPlan(newPlan);
-    setTaskChecks(newPlan.actions.map(a => a.completed));
-    storage.set('hos:todayplan', JSON.stringify(newPlan));
-  }, [scores]);
+  const taskChecks = plan?.actions?.map(a => a.completed) ?? [false, false, false];
 
   const toggleTask = (i: number) => {
-    const next = [...taskChecks];
-    next[i] = !next[i];
-    setTaskChecks(next);
-    if (plan) {
-      const updated = { ...plan, actions: plan.actions.map((a, idx) => ({ ...a, completed: next[idx] })) };
-      setPlan(updated);
-      storage.set('hos:todayplan', JSON.stringify(updated));
+    if (onUpdatePlanTask) {
+      onUpdatePlanTask(i, !taskChecks[i]);
     }
   };
 
-  const submit = () => {
-    onAdd({
-      date: new Date().toISOString(),
-      mood,
-      energy,
-      tasksCompleted: taskChecks,
-      win: win.trim() || undefined,
-      miss: miss.trim() || undefined,
-      note: note.trim(),
-    });
-    setDone(true);
+  const submit = async () => {
+    setSubmitting(true);
+    try {
+      const result = await (onAdd as any)({
+        mood,
+        energy,
+        tasksCompleted: taskChecks,
+        win: win.trim() || undefined,
+        miss: miss.trim() || undefined,
+        note: note.trim(),
+      });
+      setDone(true);
+    } catch (e) {
+      console.error('Check-in failed:', e);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (done || alreadyDone) {
@@ -232,7 +218,9 @@ export default function TodayTab({ scores, checkIns, onAdd, goals = [], onSaveGo
         />
       </Card>
 
-      <button onClick={submit} style={{ ...btnStyle(true), marginBottom: 16 }}>Record Check-in →</button>
+      <button onClick={submit} disabled={submitting} style={{ ...btnStyle(true), marginBottom: 16, opacity: submitting ? 0.6 : 1 }}>
+        {submitting ? 'Saving & generating coaching...' : 'Record Check-in →'}
+      </button>
 
       {/* Goals Section */}
       {onSaveGoal && (

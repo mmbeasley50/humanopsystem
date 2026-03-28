@@ -115,6 +115,42 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_plans: {
+        Row: {
+          accountability: string
+          actions: Json
+          avoid: string
+          created_at: string
+          date: string
+          id: string
+          primary_focus: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accountability?: string
+          actions?: Json
+          avoid?: string
+          created_at?: string
+          date?: string
+          id?: string
+          primary_focus?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accountability?: string
+          actions?: Json
+          avoid?: string
+          created_at?: string
+          date?: string
+          id?: string
+          primary_focus?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           active: boolean

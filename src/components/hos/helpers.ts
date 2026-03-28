@@ -38,14 +38,13 @@ export const streak = (cis: CheckIn[]): number => {
     const d = new Date(ci.date);
     d.setHours(0, 0, 0, 0);
     return d.getTime();
-  }))].sort((a, b) => b - a); // sort descending by timestamp
+  }))].sort((a, b) => b - a);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayMs = today.getTime();
   const DAY = 86400000;
 
-  // Check if most recent check-in is today or yesterday
   if (uniqueDates[0] < todayMs - DAY) return 0;
 
   let count = 0;
@@ -87,34 +86,4 @@ export const generateTodayPlan = (scores: Scores): TodayPlan => {
     avoid: primaryAction?.avoid ?? 'Avoid behaviors that undermine your weakest area.',
     accountability: `Today I will focus on ${primary.name} because it is my #1 constraint at ${primary.score}/10.`,
   };
-};
-
-export const storage = {
-  get: (key: string) => {
-    try { return localStorage.getItem(key); } catch { return null; }
-  },
-  set: (key: string, value: string) => {
-    try { localStorage.setItem(key, value); } catch { /* noop */ }
-  },
-};
-
-// Assessment history helpers
-export const getAssessments = (): Assessment[] => {
-  try {
-    const raw = storage.get('hos:assessments');
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
-};
-
-export const saveAssessment = (scores: Scores): Assessment => {
-  const assessment: Assessment = {
-    date: new Date().toISOString(),
-    scores,
-    domainScores: getDomainScoresMap(scores),
-    overall: getOverall(scores),
-  };
-  const existing = getAssessments();
-  existing.push(assessment);
-  storage.set('hos:assessments', JSON.stringify(existing));
-  return assessment;
 };
