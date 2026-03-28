@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis } from 'recharts';
 import { G, DIM, CREAM, CARD, BORDER, DOMAINS, type Scores, type CheckIn, type Assessment } from './constants';
-import { getDomainScore, getOverall, scoreColor, streak, getAssessments } from './helpers';
+import { getDomainScore, getOverall, scoreColor, streak } from './helpers';
 import { Card, Mono } from './shared';
 
 interface ProgressTabProps {
