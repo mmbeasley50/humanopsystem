@@ -105,6 +105,8 @@ export default function Index() {
             goals={hosData.goals}
             onSaveGoal={hosData.saveGoal}
             onDeleteGoal={hosData.deleteGoal}
+            todayPlan={hosData.todayPlan}
+            onUpdatePlanTask={hosData.updatePlanTask}
           />
         )}
         {tab === 'progress' && (
