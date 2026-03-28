@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { G, DIM, DARK, CREAM, type Profile, type Scores, type CheckIn } from '@/components/hos/constants';
-import { getOverall, saveAssessment, storage } from '@/components/hos/helpers';
+import { getOverall } from '@/components/hos/helpers';
 import Onboard from '@/components/hos/Onboard';
 import Assess from '@/components/hos/Assess';
 import DashTab from '@/components/hos/DashTab';

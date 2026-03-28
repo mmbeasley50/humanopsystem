@@ -14,7 +14,7 @@ interface ProgressTabProps {
 export default function ProgressTab({ scores, checkIns, assessments: propAssessments, streak: streakData }: ProgressTabProps) {
   const [viewHistory, setViewHistory] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
-  const assessments = propAssessments ?? getAssessments();
+  const assessments = propAssessments ?? [];
 
   const overall = getOverall(scores);
   const chartData = checkIns.slice(-21).map(ci => ({
